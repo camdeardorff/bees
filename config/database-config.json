@@ -1,0 +1,12 @@
+
+{
+  "pg": {
+    "user": "postgres",
+    "database": "bees",
+    "password": "7dPzx-5D",
+    "host": "localhost",
+    "port": 5432,
+    "max": 10,
+    "idleTimeoutMillis": 30000
+  }
+}
