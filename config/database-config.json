@@ -1,12 +1,12 @@
 
 {
-  "pg": {
-    "user": "postgres",
-    "database": "bees",
-    "password": "7dPzx-5D",
-    "host": "localhost",
-    "port": 5432,
-    "max": 10,
-    "idleTimeoutMillis": 30000
-  }
+  "user": "goaidoqpreldfg",
+  "database": "ddep6p5af62me5",
+  "password": "TAq-0fnWeft4aL3f2pKSYQ5aEv",
+  "host": "ec2-54-227-245-222.compute-1.amazonaws.com",
+  "port": 5432,
+  "max": 10,
+  "psql": "heroku pg:psql --app heroku-postgres-86a793a8 HEROKU_POSTGRESQL_PUCE",
+  "url": "postgres://goaidoqpreldfg:TAq-0fnWeft4aL3f2pKSYQ5aEv@ec2-54-227-245-222.compute-1.amazonaws.com:5432/ddep6p5af62me5",
+  "idleTimeoutMillis": 30000
 }
