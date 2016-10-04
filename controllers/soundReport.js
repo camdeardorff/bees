@@ -10,7 +10,6 @@ var express = require('express'),
 
 router.post('/new', function (req, res) {
 
-
 	var data = req.body;
 	var message = {};
 	if (data) {
@@ -19,14 +18,13 @@ router.post('/new', function (req, res) {
 
 		if (sound && time) {
 			time = new Date(time);
-			var selectString = 'INSERT INTO "CafRecord" (decibels, sample_time, store_time, id) VALUES ($1, $2, $3, DEFAULT)';
-			db.getConnection().query(selectString, [sound, time, new Date()], function (err, results) {
+			var selectString = "INSERT INTO `sound_records` (`id`, `sample_time`, `record_time`, `decibels`) VALUES (NULL, ?, CURRENT_TIMESTAMP, ?);";
+			db.getConnection().query(selectString, [time, sound], function (err) {
 				if (err) {
 					console.log(err);
 					message.success = false;
 					message.error = "There was a problem inserting that into the database";
 				} else {
-					console.log("results: ", results);
 					message.success = true;
 				}
 				res.json(message);
@@ -48,20 +46,21 @@ router.get('/today', function (req, res) {
 
 	console.log("today: ", today);
 
-	var selectString = 'SELECT \"CafRecord\".sample_time , \"CafRecord\".decibels FROM \"CafRecord\" WHERE \"CafRecord\".sample_time > $1';
-	db.getConnection().query(selectString, [today], function (err, results) {
+	var selectString = "SELECT `sound_records`.`sample_time`, `sound_records`.`decibels`  FROM `sound_records` WHERE `sample_time` > ?";
+	db.getConnection().query(selectString, [today], function (err, rows) {
 		if (err) {
 			console.log("error: ", err);
 			message.success = false;
 			message.error = err;
 		} else {
-			console.log("results: ", results);
 			message.success = true;
-			message.data = results.rows;
+			message.data = rows;
 		}
 		res.json(message);
 	});
 });
+
+
 
 router.get('/from/:fromDate/to/:toDate', function (req, res) {
 	var message = {};
@@ -75,16 +74,15 @@ router.get('/from/:fromDate/to/:toDate', function (req, res) {
 			var fromDate = new Date(from);
 			var toDate = new Date(to);
 
-			var selectString = 'SELECT \"CafRecord\".sample_time , \"CafRecord\".decibels FROM \"CafRecord\" WHERE \"CafRecord\".sample_time > $1 AND \"CafRecord\".sample_time < $2';
-			db.getConnection().query(selectString, [fromDate, toDate], function (err, results) {
+			var selectString = "SELECT `sound_records`.`sample_time`, `sound_records`.`decibels`  FROM `sound_records` WHERE `sample_time` > ? AND `sample_time < ?";
+			db.getConnection().query(selectString, [fromDate, toDate], function (err, rows) {
 				if (err) {
 					console.log("error: ", err);
 					message.success = false;
 					message.error = err;
 				} else {
-					console.log("results: ", results);
 					message.success = true;
-					message.data = results.rows;
+					message.data = rows;
 				}
 				res.json(message);
 			});

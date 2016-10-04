@@ -7,49 +7,8 @@ var express = require('express'),
 
 router.use('/soundReport', require('./soundReport'));
 
-
-var db = require('../database/database');
-console.log(db);
-console.log(db.getConnection());
-
 router.get('/', function (req, res) {
 	console.log("Got at /");
-	//render page to user here
-
-
-	db.getConnection().query('SELECT table_schema,table_name FROM information_schema.tables ORDER BY table_schema,table_name;', [], function (err, results) {
-		console.log("part 0");
-		if (err) {
-			console.log(err);
-		}
-		if (results) {
-			console.log(results);
-		}
-	});
-
-
-	db.getConnection().query('SELECT *  FROM "CafRecord"', [], function (err, results) {
-		console.log("part 2");
-		if (err) {
-			console.log(err);
-		}
-		if (results) {
-			console.log(results);
-		}
-	});
-
-	db.getConnection().query('SELECT *  FROM CafRecord', [], function (err, results) {
-		console.log("part 3");
-		if (err) {
-			console.log(err);
-		}
-		if (results) {
-			console.log(results);
-		}
-	});
-
-
-
 
 	res.json("hello");
 });
