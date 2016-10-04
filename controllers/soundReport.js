@@ -19,7 +19,7 @@ router.post('/new', function (req, res) {
 
 		if (sound && time) {
 			time = new Date(time);
-			var selectString = 'INSERT INTO CafRecord (decibels, sample_time, store_time, id) VALUES ($1, $2, $3, DEFAULT)';
+			var selectString = 'INSERT INTO "CafRecord" (decibels, sample_time, store_time, id) VALUES ($1, $2, $3, DEFAULT)';
 			db.getConnection().query(selectString, [sound, time, new Date()], function (err, results) {
 				if (err) {
 					console.log(err);
