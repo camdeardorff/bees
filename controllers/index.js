@@ -17,8 +17,8 @@ router.get('/', function (req, res) {
 	//render page to user here
 
 
-	db.getConnection().query('SELECT *  FROM \"CafRecord\"', [], function (err, results) {
-		console.log("part 1");
+	db.getConnection().query('SELECT table_schema,table_name FROM information_schema.tables ORDER BY table_schema,table_name;', [], function (err, results) {
+		console.log("part 0");
 		if (err) {
 			console.log(err);
 		}
