@@ -8,6 +8,10 @@ var express = require('express'),
 router.use('/soundReport', require('./soundReport'));
 
 
+var db = require('../database/database');
+console.log(db);
+console.log(db.getConnection());
+
 router.get('/', function (req, res) {
 	console.log("Got at /");
 	//render page to user here

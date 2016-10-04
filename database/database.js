@@ -9,9 +9,11 @@ var db = function () {
 };
 
 db.getConnection = function () {
+	console.log("DB: get connection");
 	if (this.pool) {
 		return this.pool;
 	} else {
+		console.log("DB: create new pool with config");
 		this.pool = new pg.Pool(config);
 
 		this.pool.on('error', function (err, client) {
