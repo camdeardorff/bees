@@ -74,7 +74,8 @@ router.get('/from/:fromDate/to/:toDate', function (req, res) {
 			var fromDate = new Date(from);
 			var toDate = new Date(to);
 
-			var selectString = "SELECT `sound_records`.`sample_time`, `sound_records`.`decibels`  FROM `sound_records` WHERE `sample_time` > ? AND `sample_time < ?";
+			var selectString = "SELECT `sound_records`.`sample_time`, `sound_records`.`decibels` " +
+				"FROM `sound_records` WHERE `sample_time` > ? AND `sample_time < ?";
 			db.getConnection().query(selectString, [fromDate, toDate], function (err, rows) {
 				if (err) {
 					console.log("error: ", err);
