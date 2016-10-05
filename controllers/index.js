@@ -7,10 +7,4 @@ var express = require('express'),
 
 router.use('/soundReport', require('./soundReport'));
 
-router.get('/', function (req, res) {
-	console.log("Got at /");
-
-	res.json("hello");
-});
-
 module.exports = router;
