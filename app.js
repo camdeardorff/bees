@@ -29,4 +29,33 @@ var server = app.listen(process.env.PORT || 3000, function () {
 
 });
 
+//
+// setTimeout(function () {
+//
+// 	var Interval = require('./models/Interval');
+// 	var SoundRecord = require('./models/SoundRecord');
+// 	var IntervalRecord = require('./models/IntervalRecord');
+// 	var Moment = require('moment');
+//
+// 	var moment1 = new Date(Moment().add(-240, "minutes").format("YYYY-MM-DD HH:mm:ss"));
+// 	var moment2 = new Date(Moment().add(-120, "minutes").format("YYYY-MM-DD HH:mm:ss"));
+//
+// 	console.log(moment1.toDateString());
+//
+// 	var inter = new Interval.atDate(new Date(moment1));
+//
+// 	IntervalRecord.betweenDates(moment1, moment2, function (err, records) {
+// 		console.log(err);
+// 		console.log(records);
+//
+// 		for (var i=0; i<records.length; i++) {
+// 			console.log(records[i].interval.getDates().from);
+// 		}
+// 	});
+//
+//
+//
+// }, 1000);
+
+
 module.exports = app;
