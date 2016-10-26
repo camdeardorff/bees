@@ -1,0 +1,14 @@
+{
+  "SoundRecord": {
+    "insert": "INSERT INTO `sound_records` (`id`, `sample_time`, `record_time`, `decibels`) VALUES (NULL, ?, CURRENT_TIMESTAMP, ?);",
+    "beforeDate": "SELECT * FROM `sound_records` WHERE `sound_records`.`sample_time` < ?;",
+    "afterDate": "SELECT * FROM `sound_records` WHERE `sound_records`.`sample_time` > ?;",
+    "betweenDates": "SELECT * FROM `sound_records` WHERE ? < `sound_records`.`sample_time` AND `sound_records`.`sample_time` < ?;"
+  },
+  "IntervalRecord": {
+    "insert": "INSERT INTO `interval_records` (`id`, `from_time`, `to_time`, `decibels`) VALUES (NULL, ?, ?, ?);",
+    "at": "SELECT DISTINCT * FROM `interval_records` WHERE `interval_records`.`from_time` = ? AND `interval_records`.`to_time` = ?;",
+    "inRange": "SELECT DISTINCT * FROM `interval_records` WHERE ? <= `interval_records`.`to_time` AND `interval_records`.`from_time` <= ?;"
+
+  }
+}
