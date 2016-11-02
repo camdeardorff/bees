@@ -73,6 +73,48 @@ Interval.prototype.next = function () {
 };
 
 
+Interval.prototype.previous = function () {
+	var previousDate = this.date;
+	var previousHour = this.hour;
+	var previousIntervalNum = this.intervalIndex;
+
+	if (this.intervalIndex - 1 < 0) {
+		// this was the first interval. make it the last
+		previousIntervalNum = intervalRanges.length -1;
+		if (previousHour < 1) {
+			previousHour = 23;
+			// move to yesterday
+			var newMoment = moment(this.date)
+				.add(-1, 'day')
+				.hour(23)
+				.minutes(45)
+				.seconds(0);
+			previousDate = newMoment.format('YYYY-MM-DD');
+		} else {
+			previousHour -= 1;
+		}
+	} else {
+		previousIntervalNum -= 1;
+	}
+	return new Interval(previousDate, previousHour, previousIntervalNum);
+
+};
+
+
+
+
+
+
+
+
+Interval.prototype.isEqualToInterval = function (otherInterval) {
+	return (this.date === otherInterval.date &&
+			this.hour === otherInterval.hour &&
+			this.intervalIndex === otherInterval.intervalIndex);
+
+};
+
+
 Interval.atDate = function (dateObj) {
 	var newMoment = moment(dateObj);
 
