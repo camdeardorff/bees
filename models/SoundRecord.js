@@ -6,7 +6,7 @@
 //import necessary dependancies
 var db = require('../database/database');
 var queries = require('../database/queries.json').SoundRecord;
-var schemas = require("../schemas.js");
+// var schemas = require("../schemas.js");
 
 
 function SoundRecord (id, sampleDate, recordDate, decibels) {
@@ -58,7 +58,7 @@ SoundRecord.samplesBeforeDate  = function (date, callback) {
 SoundRecord.samplesAfterDate = function (date, callback) {
 	console.log("getting samples after: ", date);
 
-	var q = db.getConnection().query(queries.afterDate, [date], function (err, rows) {
+	db.getConnection().query(queries.afterDate, [date], function (err, rows) {
 		if (err) {
 			//TODO: find out the error and send back a good one
 			callback(err);
@@ -78,7 +78,6 @@ SoundRecord.samplesAfterDate = function (date, callback) {
 			callback(null, records);
 		}
 	});
-	console.log(q.sql);
 };
 
 SoundRecord.samplesBetweenDates = function (start, end, callback) {
