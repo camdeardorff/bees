@@ -10,39 +10,26 @@ var settings = require('../config/database-config.json');
 
 
 var db = function () {
-	this.connection = null;
+	this.pool = mysql.createPool(settings.development);
 };
 
-db.getConnection = function () {
-	if (db.connection) {
-		return db.connection;
-	} else {
-		this.connection = mysql.createConnection(settings.production);
-
-		this.connection.connect(function(err){
-			if(!err) {
-				console.log('Database is connected!');
-			} else {
-				console.log('Error connecting database!');
-				console.log(err);
-			}
-		});
-		this.connection.on('error', function (err) {
-			// console.log('db error', err);
-			if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
-				console.log("Connection to database was lost. Idle without connection until we need it.");
-				db.connection = null;
-				//setTimeout(db.getConnection, 2000);
-			} else {
-				// console.log("PROTOCOL_CONNECTION_LOST TRUE");
-				throw err;
-			}
-		})
+db.query = function (sqlString, values, callback) {
+	if (!this.pool) {
+		this.pool = mysql.createPool(settings.development);
 	}
-	return this.connection;
-};
 
-db.getConnection();
+	this.pool.getConnection(function (err, connection) {
+		if (err) {
+			callback(err);
+		} else {
+			var q = connection.query(sqlString, values, function (err, rows, results) {
+				callback(err, rows, results);
+				connection.release();
+			});
+			// console.log(q.sql);
+		}
+	});
+};
 
 
 
