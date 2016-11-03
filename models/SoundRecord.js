@@ -20,7 +20,7 @@ function SoundRecord (id, sampleDate, recordDate, decibels) {
 SoundRecord.prototype.save = function (callback) {
 	var record = this;
 
-	db.getConnection().query(queries.insert, [this.sampleDate, this.decibels], function (err, result) {
+	db.query(queries.insert, [this.sampleDate, this.decibels], function (err, result) {
 		if (err) {
 			//TODO: find out the error and send back a good one
 			callback(err);
@@ -33,7 +33,7 @@ SoundRecord.prototype.save = function (callback) {
 
 SoundRecord.samplesBeforeDate  = function (date, callback) {
 
-	db.getConnection().query(queries.beforeDate, [date], function (err, rows) {
+	db.query(queries.beforeDate, [date], function (err, rows) {
 		if (err) {
 			//TODO: find out the error and send back a good one
 			callback(err);
@@ -58,7 +58,7 @@ SoundRecord.samplesBeforeDate  = function (date, callback) {
 SoundRecord.samplesAfterDate = function (date, callback) {
 	console.log("getting samples after: ", date);
 
-	db.getConnection().query(queries.afterDate, [date], function (err, rows) {
+	db.query(queries.afterDate, [date], function (err, rows) {
 		if (err) {
 			//TODO: find out the error and send back a good one
 			callback(err);
@@ -82,7 +82,7 @@ SoundRecord.samplesAfterDate = function (date, callback) {
 
 SoundRecord.samplesBetweenDates = function (start, end, callback) {
 	console.log("getting samples between ", start, ", and ", end);
-	db.getConnection().query(queries.betweenDates, [start, end], function (err, rows) {
+	db.query(queries.betweenDates, [start, end], function (err, rows) {
 		if (err) {
 			console.log("error: ",err);
 			//TODO: find out the error and send back a good one
@@ -111,16 +111,26 @@ SoundRecord.averageDecibelsBetweenDates = function (start, end, callback) {
 		} else {
 			if (records.length > 0) {
 
-				var sum = 0;
-				for (var i = 0; i < records.length; i++) {
-					var record = records[i];
-					sum += record.decibels;
-				}
+				// !IMPORTANT! : the query returns the rows in asc order based on decibels...
+				// that means we can get the median super easy!
 
-				callback(null, sum / records.length);
+				/*    AVERAGE   */
+				// var sum = 0;
+				// for (var i = 0; i < records.length; i++) {
+				// 	var record = records[i];
+				// 	sum += record.decibels;
+				// }
+				// var average = sum / records.length;
+
+				/*    MEDIAN    */
+				var middle = (records.length / 2).toFixed(0);
+				var median = records[middle].decibels;
+
+				callback(null, median);
 			} else {
-				console.log("no records... thats why it is nan");
-				callback("There were no records");
+				console.log("no records... that's why it is nan");
+				// TODO: make a good error code
+				callback("There were no records", -1);
 			}
 		}
 	});
