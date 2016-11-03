@@ -15,7 +15,7 @@ var db = function () {
 
 db.query = function (sqlString, values, callback) {
 	if (!this.pool) {
-		this.pool = mysql.createPool(settings.development);
+		this.pool = mysql.createPool(settings.production);
 	}
 
 	this.pool.getConnection(function (err, connection) {
