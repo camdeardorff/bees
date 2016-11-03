@@ -102,17 +102,25 @@ Interval.prototype.previous = function () {
 
 
 
-
-
-
-
-
 Interval.prototype.isEqualToInterval = function (otherInterval) {
 	return (this.date === otherInterval.date &&
 			this.hour === otherInterval.hour &&
 			this.intervalIndex === otherInterval.intervalIndex);
 
 };
+
+
+
+Interval.prototype.isInFuture = function () {
+	var bounds = this.getDates();
+	var now = new Date();
+	return (bounds.from > now || bounds.to > now);
+};
+
+Interval.prototype.isInProgress = function () {
+	return this.isEqualToInterval(Interval.atDate(new Date));
+};
+
 
 
 Interval.atDate = function (dateObj) {
