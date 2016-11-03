@@ -20,7 +20,6 @@ router.post('/new', function (req, res) {
 
 		if (sound && time) {
 
-			console.log("Attempt new sound record");
 			var sr = new SoundRecord(null, time, null, sound);
 			sr.save(function (err, savedSoundResult) {
 				if (err) {
@@ -75,43 +74,46 @@ router.get('/today', function (req, res) {
 });
 
 
-
-router.get('/from/:fromDate/to/:toDate', function (req, res) {
-	var message = {};
-	var data = req.params;
-
-	if (data) {
-		var from = data.fromDate;
-		var to = data.toDate;
-
-		if (from && to) {
-			var fromDate = new Date(from);
-			var toDate = new Date(to);
-
-			var selectString = "SELECT `sound_records`.`sample_time`, `sound_records`.`decibels` " +
-				"FROM `sound_records` WHERE `sample_time` > ? AND `sample_time < ?";
-			db.getConnection().query(selectString, [fromDate, toDate], function (err, rows) {
-				if (err) {
-					console.log("error: ", err);
-					message.success = false;
-					message.error = err;
-				} else {
-					message.success = true;
-					message.data = rows;
-				}
-				res.json(message);
-			});
-		} else {
-			message.success = false;
-			message.error = "Bad Parameters";
-			res.json(message);
-		}
-	} else {
-		message.success = false;
-		message.error = "Bad Parameters";
-		res.json(message);
-	}
-});
+//
+// router.get('/from/:fromDate/to/:toDate', function (req, res) {
+// 	var message = {};
+// 	var data = req.params;
+//
+// 	if (data) {
+//  		var from = data["fromDate"];
+// 		var to = data["toDate"];
+//
+// 		if (from && to) {
+// 			var fromDate = new Date(from);
+// 			var toDate = new Date(to);
+//
+//
+// 			IntervalRecord.betweenDates(from, to, function (err, records) {
+// 				console.log("BLAAAAAH");
+// 				if (err) {
+// 					console.log("error: ", err);
+// 					message.success = false;
+// 					message.error = err;
+// 				} else {
+// 					message.success = true;
+// 					message.records = [];
+// 					for (var i = 0; i < records.length; i++) {
+// 						message.records.push(records[i]);
+// 					}
+// 				}
+// 				res.json(message);
+// 			});
+// 		} else {
+// 			message.success = false;
+// 			message.error = "Bad Parameters";
+// 			res.json(message);
+// 		}
+// 	} else {
+// 		message.success = false;
+// 		message.error = "Bad Parameters";
+// 		res.json(message);
+// 	}
+// });
 
 
 
