@@ -10,7 +10,7 @@ var settings = require('../config/database-config.json');
 
 
 var db = function () {
-	this.pool = mysql.createPool(settings.development);
+	this.pool = mysql.createPool(settings.production);
 };
 
 db.query = function (sqlString, values, callback) {
@@ -22,11 +22,10 @@ db.query = function (sqlString, values, callback) {
 		if (err) {
 			callback(err);
 		} else {
-			var q = connection.query(sqlString, values, function (err, rows, results) {
+			connection.query(sqlString, values, function (err, rows, results) {
 				callback(err, rows, results);
 				connection.release();
 			});
-			// console.log(q.sql);
 		}
 	});
 };
