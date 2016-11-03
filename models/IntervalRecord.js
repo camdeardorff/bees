@@ -12,33 +12,33 @@ var SoundRecord = require('./SoundRecord');
 var async = require('async');
 
 
-var IntervalRecord = function(interval, decibels) {
+var IntervalRecord = function (interval, decibels) {
 	this.interval = interval;
 	this.decibels = decibels;
 };
 
 IntervalRecord.createAtInterval = function (interval, callback) {
+	//TODO: check to see if this is a unique record
 	var dates = interval.getDates();
 	//grab each record in this frame
 	SoundRecord.averageDecibelsBetweenDates(dates.from, dates.to, function (err, average) {
-		if (err) {
-			callback(err);
-		} else {
-			var intervalRecord = new IntervalRecord(interval, average);
-			intervalRecord.save(function (err, record) {
-				if (err) {
-					callback(err);
-				} else {
-					callback(null, record);
-				}
-			})
-		}
+
+		// TODO: handle error
+		var intervalRecord = new IntervalRecord(interval, average);
+		intervalRecord.save(function (err, record) {
+			if (err) {
+				callback(err);
+			} else {
+				callback(null, record);
+			}
+		})
+
 	});
 };
 
 /*
-saves unique records only. when saving this function checks if this record is already in the database. if it is then
-it is not saved.
+ saves unique records only. when saving this function checks if this record is already in the database. if it is then
+ it is not saved.
  */
 IntervalRecord.prototype.save = function (callback) {
 	var record = this;
@@ -54,7 +54,7 @@ IntervalRecord.prototype.save = function (callback) {
 				callback(null, oldRecord);
 			} else {
 				// save it
-				db.getConnection().query(queries.insert, [intervalRange.from, intervalRange.to, record.decibels], function (err, result) {
+				db.query(queries.insert, [intervalRange.from, intervalRange.to, record.decibels], function (err, result) {
 					if (err) {
 						//TODO: find out the error and send back a good one
 						callback(err);
@@ -80,8 +80,8 @@ IntervalRecord.prototype.next = function (callback) {
 				IntervalRecord.createAtInterval(nextInterval, function (err, newRecord) {
 					if (err) {
 						callback(err);
-  					} else {
-  						callback(null, newRecord);
+					} else {
+						callback(null, newRecord);
 
 						//save asynchronously?
 						newRecord.save(function (err, savedRecord) {
@@ -97,7 +97,7 @@ IntervalRecord.prototype.next = function (callback) {
 
 IntervalRecord.atInterval = function (intervalRange, callback) {
 	var dates = intervalRange.getDates();
-	db.getConnection().query(queries.at, [dates.from, dates.to], function (err, rows) {
+	db.query(queries.at, [dates.from, dates.to], function (err, rows) {
 		if (err) {
 			callback(err);
 		} else {
@@ -124,109 +124,92 @@ IntervalRecord.containingDate = function (dateObj, callback) {
 };
 
 IntervalRecord.betweenDates = function (start, end, callback) {
-	console.log("start");
 	var expectedRecords = IntervalRecord.expectedRecordsBetweenDates(start, end);
 
-	console.log("expecting " + expectedRecords + " recods");
-	db.getConnection().query(queries.inRange, [start, end], function (err, rows) {
+	// console.log("expecting " + expectedRecords + " records");
+	db.query(queries.inRange, [start, end], function (err, rows) {
 		if (err) {
+			// console.log("error getting the interval records in range: ", err);
 			callback(err);
 		} else {
-			console.log("found " + rows.length + " records");
-			if (rows.length < expectedRecords) {
-				console.log("not all of them are here");
+			// console.log("found " + rows.length + " records");
+			if (rows.length >= expectedRecords) {
+				// all of the records were in the database, send them all back
+				var savedRecords = [];
+				for (var i = 0; i < rows.length; i++) {
+					var intervalFromRow = new Interval.atDate(new Date(rows[i]["from_time"]));
+					var decibelsFromRow = rows[i]["decibels"];
+					var dbIntervalRecord = new IntervalRecord(intervalFromRow, decibelsFromRow);
+					savedRecords.push(dbIntervalRecord);
+				}
+				callback(null, savedRecords);
+			} else {
+				// console.log("not all of them are here");
 				// not all of the Intervals have been created and then stored
 				// get range record at the start
 				// get next (store if necessary) until next is not in the range (or if it is in the future)
 				var records = [];
-				var current = null;
-				var now = new Date();
 
-				/*
-					ALTERNATE APPROACH
-					- receive the rows sorted by date
-					- form into an interval and sequentially check if the next interval is the next row provided..
-						- if not create it and go again
-				 */
-
-				var getFirst = function (finished) {
-					console.log("get first");
-					IntervalRecord.containingDate(start, function (err, record) {
-						if (record) {
-							console.log("there was a first record");
-							current = record;
-							records.push(record);
-							finished(err);
-						} else {
-							console.log("no first record");
-							var interval = new Interval.atDate(start);
-							IntervalRecord.createAtInterval(interval, function (err, newRecord) {
-								if (err) {
-									console.log(err);
-								}
-								console.log("created a new first record");
-								current = newRecord;
-								records.push(current);
-								finished(err);
-							});
-						}
-					});
-				};
-
-				// function to fill in the rest of the list
-				var fillList = function (finished) {
-
-					//TODO: check if current interval record is null
-
-					console.log("fill list");
-
-					var getNext = function (gotNext) {
-						console.log("get next");
-						//TODO: what if current is null?
-						current.next(function (err, record) {
-							if (!err) {
-								current = record;
-								records.push(record);
-							}
-							gotNext(err);
-						});
-					};
-
-					var isInTimeFrame = function () {
-						return current.interval.next().getDates().to < end
-							&& current.interval.next().getDates().to < now;
-					};
-
-					async.doWhilst(getNext, isInTimeFrame,
-						function (err) {
-						//TODO: err here
-
-							console.log("doen getting next");
-							//finish and send the err. if there was an error then it will be handled higher up. otherwise
-							// it will be null and we dont care
-							finished(err);
-						}
-					);
-				};
-
-				async.series([getFirst, fillList], function (err) {
-					console.log("done with everything");
-					callback(err, records);
-				});
-
-			} else {
-				console.log("all of the records were here");
-				// all of the records were in the database, send them all back
-				var savedRecords = [];
-				for (var i=0; i<rows.length; i++) {
-					var row = rows[i];
-					var record = new IntervalRecord(
-						new Interval.atDate(new Date(row["from_time"])),
-						row["decibels"]
-					);
-					savedRecords.push(record);
+				var storedRecordsStack = [];
+				for (var i = 0; i < rows.length; i += 1) {
+					var interval = Interval.atDate(new Date(rows[i]["from_time"]));
+					var decibels = rows[i]["decibels"];
+					var record = new IntervalRecord(interval, decibels);
+					storedRecordsStack.push(record);
 				}
-				callback(null, savedRecords);
+
+				var currentInterval = Interval.atDate(start);
+				var endInterval = Interval.atDate(end);
+
+				if (currentInterval.isInFuture() || currentInterval.isInProgress()) {
+					// we are in trouble!
+					//TODO: make this a nice response from the error codes
+					callback("The start date is in the future!");
+				}
+
+				// move the endInterval to a safe position
+				while (endInterval.isInProgress() || endInterval.isInFuture()) {
+					endInterval = endInterval.previous();
+				}
+
+
+				// boolean function, figures out if there are still more intervals to go.
+				var intervalsRemain = function () {
+					return (!currentInterval.isEqualToInterval(endInterval.next()) && !currentInterval.isInFuture())
+				};
+
+				// get the next record from the storedRecordsStack or create a new record from the
+				var getNext = function (done) {
+					if (storedRecordsStack.length > 0 && storedRecordsStack[0].interval.isEqualToInterval(currentInterval)) {
+						// check if the current interval's record is at the top of the stack
+						// if it is then add it to the records to send back
+						// remove that record from the top of the stack
+						records.push(storedRecordsStack.shift());
+						// always keep moving forward
+						currentInterval = currentInterval.next();
+						done();
+					} else {
+						//create record for this interval
+						IntervalRecord.createAtInterval(currentInterval, function (err, newIntervalRecord) {
+							if (err) {
+								done(err);
+							} else {
+								records.push(newIntervalRecord);
+								// always keep moving forward
+								currentInterval = currentInterval.next();
+								done();
+							}
+						});
+					}
+				};
+
+				// get the next record while there are still intervals to progress through
+				async.doWhilst(getNext, intervalsRemain,
+					function (err) {
+						//finish and send the err. if there was an error then it will be handled higher up.
+						callback(err, records);
+					}
+				);
 			}
 		}
 	});
@@ -234,17 +217,17 @@ IntervalRecord.betweenDates = function (start, end, callback) {
 
 IntervalRecord.expectedRecordsBetweenDates = function (start, end) {
 	/*
-	it is easy to get the expected number of records between dates because it should be the number of
-	total minutes divided by the range time. But what if there is residue? The residue is still in the
-	range so we should return every single record that has a peice of that range.
+	 it is easy to get the expected number of records between dates because it should be the number of
+	 total minutes divided by the range time. But what if there is residue? The residue is still in the
+	 range so we should return every single record that has a peice of that range.
 
-	If the start is in the middle of an interval then we will give them the full interval they began in.
-	If the end is in the middle of an interval then we will give them the full interval they began in UNLESS the
-		end date is in the future.
+	 If the start is in the middle of an interval then we will give them the full interval they began in.
+	 If the end is in the middle of an interval then we will give them the full interval they began in UNLESS the
+	 end date is in the future.
 
-	Fixed bug!
-	There is an edge case where the expected records is one more than it should be. If the interval has not yet been
-	fully completed - still in progress - then don't include that one.
+	 Fixed bug!
+	 There is an edge case where the expected records is one more than it should be. If the interval has not yet been
+	 fully completed - still in progress - then don't include that one.
 	 */
 
 	var now = new Date();
