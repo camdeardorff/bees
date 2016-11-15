@@ -10,16 +10,11 @@ var intervalRanges = [
 	{from: {minutes: 45, seconds: 0}, to: {minutes: 59, seconds: 59}}
 ];
 
-var Interval = function(date, hour, intervalNum) {
+var Interval = function (date, hour, intervalNum) {
 	this.date = date;
 	this.hour = hour;
 	this.intervalIndex = intervalNum;
-	if (intervalNum < intervalRanges.length) {
-		this.range = intervalRanges[intervalNum];
-	} else {
-		// TODO: do something with range here
-		this.range = intervalRanges[0];
-	}
+	this.range = intervalRanges[intervalNum];
 };
 
 
@@ -36,8 +31,17 @@ Interval.prototype.getDates = function () {
 		.seconds(this.range.to.seconds);
 
 	return {
-		from: new Date(start.toString()),
-		to: new Date(end.toString())
+		from: start.toDate(),
+		to: end.toDate()
+	}
+};
+
+
+Interval.prototype.boundsValue = function () {
+	var dates = this.getDates();
+	return {
+		from: dates.from.valueOf(),
+		to: dates.to.valueOf()
 	}
 };
 
@@ -80,7 +84,7 @@ Interval.prototype.previous = function () {
 
 	if (this.intervalIndex - 1 < 0) {
 		// this was the first interval. make it the last
-		previousIntervalNum = intervalRanges.length -1;
+		previousIntervalNum = intervalRanges.length - 1;
 		if (previousHour < 1) {
 			previousHour = 23;
 			// move to yesterday
@@ -97,18 +101,15 @@ Interval.prototype.previous = function () {
 		previousIntervalNum -= 1;
 	}
 	return new Interval(previousDate, previousHour, previousIntervalNum);
-
 };
-
 
 
 Interval.prototype.isEqualToInterval = function (otherInterval) {
 	return (this.date === otherInterval.date &&
-			this.hour === otherInterval.hour &&
-			this.intervalIndex === otherInterval.intervalIndex);
+	this.hour === otherInterval.hour &&
+	this.intervalIndex === otherInterval.intervalIndex);
 
 };
-
 
 
 Interval.prototype.isInFuture = function () {
@@ -117,10 +118,10 @@ Interval.prototype.isInFuture = function () {
 	return (bounds.from > now || bounds.to > now);
 };
 
+
 Interval.prototype.isInProgress = function () {
 	return this.isEqualToInterval(Interval.atDate(new Date));
 };
-
 
 
 Interval.atDate = function (dateObj) {
