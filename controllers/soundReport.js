@@ -6,8 +6,8 @@ var express = require('express'),
 	router = express.Router(),
 	SoundRecord = require('../models/SoundRecord'),
 	IntervalRecord = require('../models/IntervalRecord');
-	errorCodes = require('../errorCodes.json');
-
+var errorCodes = require('../errorCodes.json');
+var moment = require('moment');
 
 
 router.post('/new', function (req, res) {
@@ -16,9 +16,9 @@ router.post('/new', function (req, res) {
 	var message = {};
 	if (data) {
 		var sound = data.decibels;
-		var time = data.atTime;
+		var time = null;//data.atTime;
 
-		if (sound && time) {
+		if (sound) {
 
 			var sr = new SoundRecord(null, time, null, sound);
 			sr.save(function (err, savedSoundResult) {
@@ -45,20 +45,26 @@ router.post('/new', function (req, res) {
 });
 
 
-router.get('/today', function (req, res) {
+router.get('/today/:timeZone', function (req, res) {
 
 	var message = {};
-	var today = new Date();
-	today.setHours(0,0,0,0);
 
-	var tomorrow = new Date();
-	tomorrow.setDate(today.getDate() + 1);
-	tomorrow.setHours(0,0,0,0);
+	var timeZone = req.params["timeZone"];
+	timeZone = timeZone.replace("*=SLASH=*", "/");
 
-	console.log("today: ", today);
-	console.log("tomorrow: ", tomorrow);
+	console.log("timezone: ", timeZone);
 
-	IntervalRecord.betweenDates(today, tomorrow, function (err, records) {
+	var start = moment.tz(timeZone)
+		.hours(0)
+		.minutes(0)
+		.seconds(0);
+
+	var end = moment.tz(timeZone)
+		.hours(23)
+		.minutes(59)
+		.seconds(59);
+
+	IntervalRecord.betweenDates(start.toDate(), end.toDate(), function (err, records) {
 		if (err) {
 			message.success = false;
 			message.error = err;
@@ -66,7 +72,17 @@ router.get('/today', function (req, res) {
 			message.success = true;
 			message.records = [];
 			for (var i = 0; i < records.length; i++) {
-				message.records.push(records[i]);
+				var record = records[i];
+
+				// simplify everything for the client
+				var interval = record.interval;
+				delete record.interval;
+				record.range = {
+					from: moment.utc(interval.bounds.from).tz("America/New_York").format("hh:mm"),
+					to: moment.utc(interval.bounds.from).tz("America/New_York").format("hh:mm")
+				};
+
+				message.records.push(record);
 			}
 		}
 		res.json(message);
@@ -74,47 +90,43 @@ router.get('/today', function (req, res) {
 });
 
 
-//
-// router.get('/from/:fromDate/to/:toDate', function (req, res) {
-// 	var message = {};
-// 	var data = req.params;
-//
-// 	if (data) {
-//  		var from = data["fromDate"];
-// 		var to = data["toDate"];
-//
-// 		if (from && to) {
-// 			var fromDate = new Date(from);
-// 			var toDate = new Date(to);
-//
-//
-// 			IntervalRecord.betweenDates(from, to, function (err, records) {
-// 				console.log("BLAAAAAH");
-// 				if (err) {
-// 					console.log("error: ", err);
-// 					message.success = false;
-// 					message.error = err;
-// 				} else {
-// 					message.success = true;
-// 					message.records = [];
-// 					for (var i = 0; i < records.length; i++) {
-// 						message.records.push(records[i]);
-// 					}
-// 				}
-// 				res.json(message);
-// 			});
-// 		} else {
-// 			message.success = false;
-// 			message.error = "Bad Parameters";
-// 			res.json(message);
-// 		}
-// 	} else {
-// 		message.success = false;
-// 		message.error = "Bad Parameters";
-// 		res.json(message);
-// 	}
-// });
+/*
+ router.get('/from/:fromDate/to/:toDate', function (req, res) {
+ // 	var message = {};	var MS_PER_MINUTE = 60000;
 
+
+ var fromDate =
+ var offsetString = req.params["utcMinutesOffset"];
+ var utcOffset = parseInt(offsetString);
+ console.log(utcOffset);
+
+ var message = {};
+
+ var today = new Date();
+ today.setHours(0, 0, 0, 0);
+ console.log("today : ", today);
+ var start = new Date(today.valueOf() + utcOffset * MS_PER_MINUTE);
+ console.log("start     : ", start);
+ var end = new Date(start.valueOf() + 1440 * MS_PER_MINUTE)
+ console.log("end   : ", end);
+
+
+ IntervalRecord.betweenDates(start, end, function (err, records) {
+ if (err) {
+ message.success = false;
+ message.error = err;
+ } else {
+ message.success = true;
+ message.records = [];
+ for (var i = 0; i < records.length; i++) {
+ message.records.push(records[i]);
+ }
+ }
+ res.json(message);
+ });
+ });
+
+ */
 
 
 module.exports = router;
