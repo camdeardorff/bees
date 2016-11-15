@@ -9,7 +9,7 @@ var queries = require('../database/queries.json').SoundRecord;
 // var schemas = require("../schemas.js");
 
 
-function SoundRecord (id, sampleDate, recordDate, decibels) {
+function SoundRecord(id, sampleDate, recordDate, decibels) {
 	this.id = id;
 	this.sampleDate = sampleDate;
 	this.recordDate = recordDate || new Date();
@@ -31,7 +31,7 @@ SoundRecord.prototype.save = function (callback) {
 	});
 };
 
-SoundRecord.samplesBeforeDate  = function (date, callback) {
+SoundRecord.samplesBeforeDate = function (date, callback) {
 
 	db.query(queries.beforeDate, [date], function (err, rows) {
 		if (err) {
@@ -40,7 +40,7 @@ SoundRecord.samplesBeforeDate  = function (date, callback) {
 		} else {
 			var records = [];
 
-			for (var i=0; i<rows.length; i++) {
+			for (var i = 0; i < rows.length; i++) {
 				var row = rows[i];
 				records[i] = new SoundRecord(
 					row["id"],
@@ -64,7 +64,7 @@ SoundRecord.samplesAfterDate = function (date, callback) {
 			callback(err);
 		} else {
 			var records = [];
-			for (var i=0; i<rows.length; i++) {
+			for (var i = 0; i < rows.length; i++) {
 				var row = rows[i];
 				console.log("working with row: ", row);
 				records[i] = new SoundRecord(
@@ -84,13 +84,13 @@ SoundRecord.samplesBetweenDates = function (start, end, callback) {
 	console.log("getting samples between ", start, ", and ", end);
 	db.query(queries.betweenDates, [start, end], function (err, rows) {
 		if (err) {
-			console.log("error: ",err);
+			console.log("error: ", err);
 			//TODO: find out the error and send back a good one
 			callback(err);
 		} else {
 			var records = [];
 
-			for (var i=0; i<rows.length; i++) {
+			for (var i = 0; i < rows.length; i++) {
 				var row = rows[i];
 				records[i] = new SoundRecord(
 					row["id"],
