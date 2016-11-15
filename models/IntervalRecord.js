@@ -126,13 +126,13 @@ IntervalRecord.containingDate = function (dateObj, callback) {
 IntervalRecord.betweenDates = function (start, end, callback) {
 	var expectedRecords = IntervalRecord.expectedRecordsBetweenDates(start, end);
 
-	// console.log("expecting " + expectedRecords + " records");
+	console.log("expecting " + expectedRecords + " records");
 	db.query(queries.inRange, [start, end], function (err, rows) {
 		if (err) {
-			// console.log("error getting the interval records in range: ", err);
+			console.log("error getting the interval records in range: ", err);
 			callback(err);
 		} else {
-			// console.log("found " + rows.length + " records");
+			console.log("found " + rows.length + " records");
 			if (rows.length >= expectedRecords) {
 				// all of the records were in the database, send them all back
 				var savedRecords = [];
