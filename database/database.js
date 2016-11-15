@@ -7,8 +7,6 @@
 var mysql = require('mysql');
 var settings = require('../config/database-config.json');
 
-
-
 var db = function () {
 	this.pool = mysql.createPool(settings.production);
 };
@@ -29,7 +27,5 @@ db.query = function (sqlString, values, callback) {
 		}
 	});
 };
-
-
 
 module.exports = db;
