@@ -7,7 +7,7 @@ var express = require('express'),
 	SoundRecord = require('../models/SoundRecord'),
 	IntervalRecord = require('../models/IntervalRecord');
 var errorCodes = require('../errorCodes.json');
-var moment = require('moment');
+var moment = require('moment-timezone');
 
 
 router.post('/new', function (req, res) {
@@ -55,12 +55,12 @@ router.get('/today/:timeZone', function (req, res) {
 	console.log("timezone: ", timeZone);
 
 	var start = moment.tz(timeZone)
-		.hours(0)
+		.hours(6)
 		.minutes(0)
 		.seconds(0);
 
 	var end = moment.tz(timeZone)
-		.hours(23)
+		.hours(21)
 		.minutes(59)
 		.seconds(59);
 
@@ -75,11 +75,11 @@ router.get('/today/:timeZone', function (req, res) {
 				var record = records[i];
 
 				// simplify everything for the client
-				var interval = record.interval;
+				var bounds = record.interval.boundsValue();
 				delete record.interval;
 				record.range = {
-					from: moment.utc(interval.bounds.from).tz("America/New_York").format("hh:mm"),
-					to: moment.utc(interval.bounds.from).tz("America/New_York").format("hh:mm")
+					from: moment.utc(bounds.from).tz("America/New_York").format("h:mm"),
+					to: moment.utc(bounds.from).tz("America/New_York").format("h:mm")
 				};
 
 				message.records.push(record);
