@@ -1,8 +1,6 @@
-
 {
-  "badParameters" : {
-      "message" : "The parameters received are not recognized by this api, please check the usage again.",
-      "code" : "001"
+  "badParameters": {
+    "message": "The parameters received are not recognized by this api, please check the usage again.",
+    "code": "001"
   }
-
 }
