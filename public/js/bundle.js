@@ -16070,6 +16070,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 var moment = require('moment-timezone');
 var Chart = require('chart.js');
 var SERVER_LOCATION = "https://cafbees.herokuapp.com";
+var DEVEOLPMENT_SERVER_LOCATION = "http://localhost:3000";
 
 
 function showLoadingGif() {
@@ -16102,58 +16103,60 @@ function getDataAtTimeZone(tz, callback) {
 }
 
 
-var tz = moment.tz.guess();
-if (tz) {
-	tz = tz.replace("/", "*=SLASH=*");
-}
-console.log("guessed time zone: ", tz);
+$( document ).ready(function() {
 
-getDataAtTimeZone(tz, function (err, data) {
-	console.log("got data: ", data);
-	if (data.success) {
-		var records = data.records;
+	var tz = moment.tz.guess();
+	if (tz) {
+		tz = tz.replace("/", "*=SLASH=*");
+	}
+	console.log("guessed time zone: ", tz);
 
-		var times = [];
-		var decibels = [];
+	getDataAtTimeZone(tz, function (err, data) {
+		console.log("got data: ", data);
+		if (data.success) {
+			var records = data.records;
 
-		for (var i = 0; i < records.length; i++) {
-			var record = records[i];
+			var times = [];
+			var decibels = [];
 
-			times.push(record.range.to);
-			decibels.push(record.decibels);
-		}
+			for (var i = 0; i < records.length; i++) {
+				var record = records[i];
+
+				times.push(record.range.to);
+				decibels.push(record.decibels);
+			}
 
 
-		var ctx = document.getElementById("myChart");
-		var myChart = new Chart(ctx, {
-			type: 'line',
-			data: {
-				labels: times,
-				datasets: [{
-					label: 'MVNU Caf Noise Volume',
-					data: decibels,
-					backgroundColor: 'rgba(0, 188, 255, 0.6)',
-					borderColor: 'rgba(51, 51, 51, 1)',
-					borderWidth: 1
-				}]
-			},
-			options: {
-				scales: {
-					yAxes: [{
-						ticks: {
-							beginAtZero: false
-						}
+			var ctx = document.getElementById("myChart");
+			var myChart = new Chart(ctx, {
+				type: 'line',
+				data: {
+					labels: times,
+					datasets: [{
+						label: 'MVNU Caf Noise Volume',
+						data: decibels,
+						backgroundColor: 'rgba(0, 188, 255, 0.6)',
+						borderColor: 'rgba(51, 51, 51, 1)',
+						borderWidth: 1
 					}]
 				},
+				options: {
+					scales: {
+						yAxes: [{
+							ticks: {
+								beginAtZero: false
+							}
+						}]
+					},
 
-				animation: {
-					duration: 1000,
-					easing: "easeInCubic"
+					animation: {
+						duration: 1000,
+						easing: "easeInCubic"
+					}
 				}
-			}
-		});
-	}
+			});
+		}
+	});
 });
-
 
 },{"chart.js":6,"moment-timezone":45}]},{},[48]);
