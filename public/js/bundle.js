@@ -16069,6 +16069,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 
 var moment = require('moment-timezone');
 var Chart = require('chart.js');
+var SERVER_LOCATION = "https://cafbees.herokuapp.com";
 
 
 function showLoadingGif() {
@@ -16082,7 +16083,7 @@ function getDataAtTimeZone(tz, callback) {
 	showLoadingGif();
 	$.ajax({
 		method: "GET",
-		url: "http://localhost:3000/soundReport/today/" + tz,
+		url: SERVER_LOCATION + "/soundReport/today/" + tz,
 		contentType: 'application/json',
 		dataType: 'json',
 		error: function (request, status, error) {
