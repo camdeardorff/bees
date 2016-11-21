@@ -52,6 +52,7 @@ router.get('/today/:timeZone', function (req, res) {
 	var timeZone = req.params["timeZone"];
 	timeZone = timeZone.replace("*=SLASH=*", "/");
 
+	console.log("received request for today");
 	console.log("timezone: ", timeZone);
 
 	var start = moment.tz(timeZone)
