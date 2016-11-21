@@ -1,10 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <h1>Welcome!</h1>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Bees?</title>
+
+        <link rel="shortcut icon" type="image/x-icon" href="../public/img/favicon.png" />`
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="../public/css/styles.css">
+
+    </head>
+    <body>
+        <a id="bees-corner" data-toggle="modal" data-target="#info-modal"><img src="../public/img/corner.svg" alt="corner"></a>
+        <div class="container">
+            <h1 id="headliner">Bees?</h1>
+            <div id="loading-gif"><img src="../public/img/jumpy.gif" alt="loading-gif"></div>
+            <canvas id="myChart" width="200" height="200"></canvas>
+
+            <div class="modal fade" id="info-modal" tabindex="-1" role="dialog" aria-labelledby="info-modal">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h3 class="modal-title" id="modal-title">Hello Friends!</h3>
+                        </div>
+                        <div class="modal-body">
+                            <h4>Welcome to <i>Bees?</i>.</h4>
+                            <p>At the start of this semester I came to realize just how much I enjoy sitting in the caf and doing homework when it is still.
+                                That is how this little project started. Giving visibility to just how loud the caf is <b>right now</b> seemed like a worthwhile and
+                                beneficial thing to have and to share with everyone. So whether you are looking for some quiet study time or a fun time with friends, <i>Bees?</i>
+                                is the place for you.</p>
+                            <h4>About the Name</h4>
+                            <p>Have you ever been in a space with a lot of people and thought "Wow this sounds like a beehive?", I have...</p>
+                            <h4>Calling all Nerds</h4>
+                            <p>Everyone is a nerd for something, I happen to be a nerd for making things with a keyboard and a lot of coffee!
+                                I've had so much fun making this and I am more than happy to include others in on the fun. If you see something
+                                that could use some love and/or want to suggest something find me on twitter <a href="http://www.twitter.com/camdeardorff">@camdeardorff</a>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <script src="../public/js/bundle.js"></script>
+    </body>
 </html>
