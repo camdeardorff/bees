@@ -11,14 +11,11 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(logger('combined'));
-app.use(require('./controllers'));
 app.set('views', './views');
 app.set('view engine', 'pug');
 
-app.get('/', function (req, res) {
-	res.render('index');
-});
-
+var routes = require('./routes');
+routes.setRequestUrl(app);
 
 var server = app.listen(process.env.PORT || 3000, function () {
 	var host = 'localhost';
