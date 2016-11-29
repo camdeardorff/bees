@@ -3,23 +3,20 @@
  */
 
 var express = require('express'),
-	router = express.Router(),
 	SoundRecord = require('../models/SoundRecord'),
 	IntervalRecord = require('../models/IntervalRecord');
 var errorCodes = require('../errorCodes.json');
 var moment = require('moment-timezone');
 
 
-router.post('/new', function (req, res) {
-
+exports.new = function (req, res, next) {
 	var data = req.body;
 	var message = {};
 	if (data) {
 		var sound = data.decibels;
-		var time = null;//data.atTime;
+		var time = data.atTime;
 
 		if (sound) {
-
 			var sr = new SoundRecord(null, time, null, sound);
 			sr.save(function (err, savedSoundResult) {
 				if (err) {
@@ -42,11 +39,10 @@ router.post('/new', function (req, res) {
 		message.success = false;
 		res.json(message);
 	}
-});
+};
 
 
-router.get('/today/:timeZone', function (req, res) {
-
+exports.today = function (req, res, next) {
 	var message = {};
 
 	var timeZone = req.params["timeZone"];
@@ -80,7 +76,7 @@ router.get('/today/:timeZone', function (req, res) {
 				delete record.interval;
 				record.range = {
 					from: moment.utc(bounds.from).tz("America/New_York").format("h:mm"),
-					to: moment.utc(bounds.from).tz("America/New_York").format("h:mm")
+					to: moment.utc(bounds.to).tz("America/New_York").format("h:mm")
 				};
 
 				message.records.push(record);
@@ -88,7 +84,7 @@ router.get('/today/:timeZone', function (req, res) {
 		}
 		res.json(message);
 	});
-});
+};
 
 
 /*
@@ -128,6 +124,3 @@ router.get('/today/:timeZone', function (req, res) {
  });
 
  */
-
-
-module.exports = router;
