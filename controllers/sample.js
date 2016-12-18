@@ -4,8 +4,8 @@
 
 
 var express = require('express'),
-	SoundRecord = require('../models/SoundRecord'),
-	IntervalRecord = require('../models/IntervalRecord');
+	SoundRecord = require('../models/soundRecord'),
+	IntervalRecord = require('../models/intervalRecord');
 var errorCodes = require('../errorCodes.json');
 
 exports.new = function (req, res, next) {

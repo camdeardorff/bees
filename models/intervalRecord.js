@@ -6,9 +6,9 @@
 //import necessary dependancies
 var db = require('../database/database');
 var queries = require('../database/queries.json').IntervalRecord;
-var Interval = require('./Interval');
+var Interval = require('./interval');
 // var Moment = require('moment');
-var SoundRecord = require('./SoundRecord');
+var SoundRecord = require('./soundRecord');
 var async = require('async');
 
 
