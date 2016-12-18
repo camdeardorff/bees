@@ -1,12 +1,12 @@
 {
   "SoundRecord": {
-    "insert": "INSERT INTO `sound_records` (`id`, `sample_time`, `record_time`, `decibels`) VALUES (NULL, ?, CURRENT_TIMESTAMP, ?);",
+    "insert": "INSERT INTO `sound_records` (`id`, `sample_time`, `record_time`, `loudness`) VALUES (NULL, ?, CURRENT_TIMESTAMP, ?);",
     "beforeDate": "SELECT * FROM `sound_records` WHERE `sound_records`.`record_time` < ?;",
     "afterDate": "SELECT * FROM `sound_records` WHERE `sound_records`.`record_time` > ?;",
     "betweenDates": "SELECT * FROM `sound_records` WHERE ? < `sound_records`.`record_time` AND `sound_records`.`record_time` < ? ORDER BY `sound_records`.`decibels` ASC;"
   },
   "IntervalRecord": {
-    "insert": "INSERT INTO `interval_records` (`id`, `from_time`, `to_time`, `decibels`) VALUES (NULL, ?, ?, ?);",
+    "insert": "INSERT INTO `interval_records` (`id`, `from_time`, `to_time`, `loudness`) VALUES (NULL, ?, ?, ?);",
     "at": "SELECT DISTINCT * FROM `interval_records` WHERE `interval_records`.`from_time` = ? AND `interval_records`.`to_time` = ?;",
     "inRange": "SELECT DISTINCT * FROM `interval_records` WHERE ? <= `interval_records`.`to_time` AND `interval_records`.`from_time` <= ? ORDER BY `interval_records`.`from_time` ASC;"
   }
