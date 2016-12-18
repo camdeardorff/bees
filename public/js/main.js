@@ -21,7 +21,7 @@ function getDataAtTimeZone(tz, callback) {
 	showLoadingGif();
 	$.ajax({
 		method: "GET",
-		url: SERVER_LOCATION + "/report/today/" + tz,
+		url: SERVER_LOCATION + "/today/" + tz,
 		contentType: 'application/json',
 		dataType: 'json',
 		error: function (request, status, error) {
@@ -63,7 +63,7 @@ $( document ).ready(function() {
 				loudnessSamples.push(record.loudness);
 			}
 
-
+			console.log(loudnessSamples);
 			var ctx = document.getElementById("myChart");
 			var myChart = new Chart(ctx, {
 				type: 'line',
