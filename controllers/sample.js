@@ -13,7 +13,7 @@ exports.new = function (req, res, next) {
 	var message = {};
 	if (data) {
 		var sound = data.decibels || data.loundness;
-		var time = new Date(data.atTime) || new Date();
+		var time = new Date(parseInt(data.atTime)) || new Date();
 
 		if (sound && time) {
 			var sr = new SoundRecord(null, time, new Date(), sound);

@@ -9,7 +9,7 @@ exports.setRequestUrl = function(app) {
 	app.get('/', index.index);
 
 	// new samples
-	app.post('/samples/new', sample.new);
+	app.post('/sample/new', sample.new);
 	// get report
 	app.get('/today/:timeZone', report.today);
 
