@@ -12,16 +12,16 @@ var SoundRecord = require('./soundRecord');
 var async = require('async');
 
 
-var IntervalRecord = function (interval, decibels) {
+var IntervalRecord = function (interval, loudness) {
 	this.interval = interval;
-	this.decibels = decibels;
+	this.loudness = loudness;
 };
 
 IntervalRecord.createAtInterval = function (interval, callback) {
 	//TODO: check to see if this is a unique record
 	var dates = interval.getDates();
 	//grab each record in this frame
-	SoundRecord.averageDecibelsBetweenDates(dates.from, dates.to, function (err, average) {
+	SoundRecord.averageLoudnessBetweenDates(dates.from, dates.to, function (err, average) {
 
 		// TODO: handle error
 		var intervalRecord = new IntervalRecord(interval, average);
@@ -54,7 +54,7 @@ IntervalRecord.prototype.save = function (callback) {
 				callback(null, oldRecord);
 			} else {
 				// save it
-				db.query(queries.insert, [intervalRange.from, intervalRange.to, record.decibels], function (err, result) {
+				db.query(queries.insert, [intervalRange.from, intervalRange.to, record.loudness], function (err, result) {
 					if (err) {
 						//TODO: find out the error and send back a good one
 						callback(err);
@@ -102,7 +102,7 @@ IntervalRecord.atInterval = function (intervalRange, callback) {
 			callback(err);
 		} else {
 			if (rows.length > 0) {
-				var ir = new IntervalRecord(new Interval.atDate(new Date(rows[0]["from_time"])), rows[0]["decibels"]);
+				var ir = new IntervalRecord(new Interval.atDate(new Date(rows[0]["from_time"])), rows[0]["loudness"]);
 				callback(null, ir);
 			} else {
 				callback();
@@ -138,8 +138,8 @@ IntervalRecord.betweenDates = function (start, end, callback) {
 				var savedRecords = [];
 				for (var i = 0; i < rows.length; i++) {
 					var intervalFromRow = new Interval.atDate(new Date(rows[i]["from_time"]));
-					var decibelsFromRow = rows[i]["decibels"];
-					var dbIntervalRecord = new IntervalRecord(intervalFromRow, decibelsFromRow);
+					var loudnessFromRow = rows[i]["loudness"];
+					var dbIntervalRecord = new IntervalRecord(intervalFromRow, loudnessFromRow);
 					savedRecords.push(dbIntervalRecord);
 				}
 				callback(null, savedRecords);
@@ -153,8 +153,8 @@ IntervalRecord.betweenDates = function (start, end, callback) {
 				var storedRecordsStack = [];
 				for (var i = 0; i < rows.length; i += 1) {
 					var interval = Interval.atDate(new Date(rows[i]["from_time"]));
-					var decibels = rows[i]["decibels"];
-					var record = new IntervalRecord(interval, decibels);
+					var loudness = rows[i]["loudness"];
+					var record = new IntervalRecord(interval, loudness);
 					storedRecordsStack.push(record);
 				}
 

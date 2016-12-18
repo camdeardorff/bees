@@ -9,18 +9,18 @@ var queries = require('../database/queries.json').SoundRecord;
 // var schemas = require("../schemas.js");
 
 
-function SoundRecord(id, sampleDate, recordDate, decibels) {
+function SoundRecord(id, sampleDate, recordDate, loudness) {
 	this.id = id;
 	this.sampleDate = sampleDate;
 	this.recordDate = recordDate || new Date();
-	this.decibels = decibels;
+	this.loudness = loudness;
 }
 
 
 SoundRecord.prototype.save = function (callback) {
 	var record = this;
 
-	db.query(queries.insert, [this.sampleDate, this.decibels], function (err, result) {
+	db.query(queries.insert, [this.sampleDate, this.loudness], function (err, result) {
 		if (err) {
 			//TODO: find out the error and send back a good one
 			callback(err);
@@ -46,7 +46,7 @@ SoundRecord.samplesBeforeDate = function (date, callback) {
 					row["id"],
 					row["sample_time"],
 					row["record_time"],
-					row["decibels"]
+					row["loudness"]
 				);
 			}
 
@@ -71,7 +71,7 @@ SoundRecord.samplesAfterDate = function (date, callback) {
 					row["id"],
 					row["sample_time"],
 					row["record_time"],
-					row["decibels"]
+					row["loudness"]
 				);
 			}
 
@@ -96,7 +96,7 @@ SoundRecord.samplesBetweenDates = function (start, end, callback) {
 					row["id"],
 					row["sample_time"],
 					row["record_time"],
-					row["decibels"]
+					row["loudness"]
 				);
 			}
 			callback(null, records);
@@ -104,27 +104,27 @@ SoundRecord.samplesBetweenDates = function (start, end, callback) {
 	});
 };
 
-SoundRecord.averageDecibelsBetweenDates = function (start, end, callback) {
+SoundRecord.averageLoudnessBetweenDates = function (start, end, callback) {
 	SoundRecord.samplesBetweenDates(start, end, function (err, records) {
 		if (err) {
 			callback(err);
 		} else {
 			if (records.length > 0) {
 
-				// !IMPORTANT! : the query returns the rows in asc order based on decibels...
+				// !IMPORTANT! : the query returns the rows in asc order based on loudness...
 				// that means we can get the median super easy!
 
 				/*    AVERAGE   */
 				// var sum = 0;
 				// for (var i = 0; i < records.length; i++) {
 				// 	var record = records[i];
-				// 	sum += record.decibels;
+				// 	sum += record.loudness;
 				// }
 				// var average = sum / records.length;
 
 				/*    MEDIAN    */
 				var middle = (records.length / 2).toFixed(0);
-				var median = records[middle].decibels;
+				var median = records[middle].loudness;
 
 				callback(null, median);
 			} else {

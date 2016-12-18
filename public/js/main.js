@@ -21,7 +21,7 @@ function getDataAtTimeZone(tz, callback) {
 	showLoadingGif();
 	$.ajax({
 		method: "GET",
-		url: SERVER_LOCATION + "/soundReport/today/" + tz,
+		url: SERVER_LOCATION + "/report/today/" + tz,
 		contentType: 'application/json',
 		dataType: 'json',
 		error: function (request, status, error) {
@@ -54,13 +54,13 @@ $( document ).ready(function() {
 			var records = data.records;
 
 			var times = [];
-			var decibels = [];
+			var loudnessSamples = [];
 
 			for (var i = 0; i < records.length; i++) {
 				var record = records[i];
 
 				times.push(record.range.to);
-				decibels.push(record.decibels);
+				loudnessSamples.push(record.loudness);
 			}
 
 
@@ -71,7 +71,7 @@ $( document ).ready(function() {
 					labels: times,
 					datasets: [{
 						label: 'MVNU Caf Noise Volume',
-						data: decibels,
+						data: loudnessSamples,
 						backgroundColor: 'rgba(0, 188, 255, 0.6)',
 						borderColor: 'rgba(51, 51, 51, 1)',
 						borderWidth: 1
