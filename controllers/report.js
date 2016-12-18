@@ -9,38 +9,6 @@ var errorCodes = require('../errorCodes.json');
 var moment = require('moment-timezone');
 
 
-exports.new = function (req, res, next) {
-	var data = req.body;
-	var message = {};
-	if (data) {
-		var sound = data.decibels;
-		var time = data.atTime;
-
-		if (sound) {
-			var sr = new SoundRecord(null, time, null, sound);
-			sr.save(function (err, savedSoundResult) {
-				if (err) {
-					console.log("error: ", err);
-					message.success = false;
-					message.error = err;
-				} else {
-					console.log("successfully saved: ", savedSoundResult);
-					message.success = true;
-
-				}
-				res.json(message);
-			});
-		} else {
-			message.success = false;
-			message.error = errorCodes.badParameters;
-			res.json(message);
-		}
-	} else {
-		message.success = false;
-		res.json(message);
-	}
-};
-
 
 exports.today = function (req, res, next) {
 	var message = {};
@@ -83,6 +51,7 @@ exports.today = function (req, res, next) {
 			}
 		}
 		res.json(message);
+		next();
 	});
 };
 
