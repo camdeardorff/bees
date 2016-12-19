@@ -49,14 +49,17 @@ exports.bulk = function (req, res, next) {
 	var message = {};
 	if (data) {
 		var samples = data.samples;
+		console.log("samples: ", samples);
 		if (samples) {
 			async.eachLimit(samples, 5, function (sample, callback) {
+				console.log("saving sample");
 				var loudness = sample.loudness;
 				var time = new Date(parseInt(sample.atTime));
 				if (loudness != null && time != null) {
 					var sr = new SoundRecord(null, time, new Date(), loudness);
 					sr.save(function (err, savedSoundResult) {
 						callback(err);
+						console.log("saved");
 					});
 				} else {
 					callback("sample missing required items");
