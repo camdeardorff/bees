@@ -3,7 +3,7 @@
     "insert": "INSERT INTO `sound_records` (`id`, `sample_time`, `record_time`, `loudness`) VALUES (NULL, ?, CURRENT_TIMESTAMP, ?);",
     "beforeDate": "SELECT * FROM `sound_records` WHERE `sound_records`.`record_time` < ?;",
     "afterDate": "SELECT * FROM `sound_records` WHERE `sound_records`.`record_time` > ?;",
-    "betweenDates": "SELECT * FROM `sound_records` WHERE ? < `sound_records`.`record_time` AND `sound_records`.`record_time` < ? ORDER BY `sound_records`.`decibels` ASC;"
+    "betweenDates": "SELECT * FROM `sound_records` WHERE ? < `sound_records`.`record_time` AND `sound_records`.`record_time` < ? ORDER BY `sound_records`.`loudness` ASC;"
   },
   "IntervalRecord": {
     "insert": "INSERT INTO `interval_records` (`id`, `from_time`, `to_time`, `loudness`) VALUES (NULL, ?, ?, ?);",
