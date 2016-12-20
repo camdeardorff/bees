@@ -89,6 +89,7 @@ SoundRecord.samplesBetweenDates = function (start, end, callback) {
 			var records = [];
 			for (var i = 0; i < rows.length; i++) {
 				var row = rows[i];
+				console.log(row);
 				records[i] = new SoundRecord(
 					row["id"],
 					row["sample_time"],
@@ -111,8 +112,11 @@ SoundRecord.medianLoudnessBetweenDates = function (start, end, callback) {
 				// !IMPORTANT! : the query returns the rows in asc order based on loudness...
 				// that means we can get the median super easy!
 
+
 				var middle = (records.length / 2).toFixed(0);
-				console.log("!!! ", records[middle]);
+				console.log("!!! records: ", records);
+				console.log("middle: ", middle);
+
 				var median = records[middle].loudness;
 
 				callback(null, median);
