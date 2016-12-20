@@ -1,5 +1,3 @@
-// https://github.com/wchaowu/nodejs/blob/master/NodeSample/routes.js
-
 exports.setRequestUrl = function(app) {
 	var index = require('./controllers/index'),
 		report = require('./controllers/report'),
@@ -12,7 +10,8 @@ exports.setRequestUrl = function(app) {
 	app.post('/samples/new', sample.new);
 	app.post('/samples/new/bulk', sample.bulk);
 	// get report
-	app.get('/today/:timeZone', report.today);
+	app.get('/report/today/:timeZone', report.today);
+	app.get('/report/range/from/:fromTime/to/:toTime/inZone/:timeZone', report.range);
 
 	// soon to be deprecated
 	// new samples
