@@ -6,7 +6,7 @@
 //import necessary dependancies
 var db = require('../database/database');
 var queries = require('../database/queries.json').SoundRecord;
-// var schemas = require("../schemas.js");
+var errorCodes = require('../errorCodes.json');
 
 
 function SoundRecord(id, sampleDate, recordDate, loudness) {
@@ -84,12 +84,9 @@ SoundRecord.samplesBetweenDates = function (start, end, callback) {
 	console.log("getting samples between ", start, ", and ", end);
 	db.query(queries.betweenDates, [start, end], function (err, rows) {
 		if (err) {
-			console.log("error: ", err);
-			//TODO: find out the error and send back a good one
-			callback(err);
+			callback(errorCodes.database_error);
 		} else {
 			var records = [];
-
 			for (var i = 0; i < rows.length; i++) {
 				var row = rows[i];
 				records[i] = new SoundRecord(
@@ -104,7 +101,7 @@ SoundRecord.samplesBetweenDates = function (start, end, callback) {
 	});
 };
 
-SoundRecord.averageLoudnessBetweenDates = function (start, end, callback) {
+SoundRecord.medianLoudnessBetweenDates = function (start, end, callback) {
 	SoundRecord.samplesBetweenDates(start, end, function (err, records) {
 		if (err) {
 			callback(err);
@@ -114,23 +111,13 @@ SoundRecord.averageLoudnessBetweenDates = function (start, end, callback) {
 				// !IMPORTANT! : the query returns the rows in asc order based on loudness...
 				// that means we can get the median super easy!
 
-				/*    AVERAGE   */
-				// var sum = 0;
-				// for (var i = 0; i < records.length; i++) {
-				// 	var record = records[i];
-				// 	sum += record.loudness;
-				// }
-				// var average = sum / records.length;
-
-				/*    MEDIAN    */
 				var middle = (records.length / 2).toFixed(0);
 				var median = records[middle].loudness;
 
 				callback(null, median);
 			} else {
-				console.log("no records... that's why it is nan");
-				// TODO: make a good error code
-				callback("There were no records", -1);
+				console.log("no records, cannot find median of empty list.");
+				callback(errorCodes.no_records, -1);
 			}
 		}
 	});

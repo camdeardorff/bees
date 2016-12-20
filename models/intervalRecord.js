@@ -3,13 +3,14 @@
  */
 
 
-//import necessary dependancies
-var db = require('../database/database');
-var queries = require('../database/queries.json').IntervalRecord;
-var Interval = require('./interval');
-// var Moment = require('moment');
-var SoundRecord = require('./soundRecord');
-var async = require('async');
+//import necessary dependencies
+var db = require('../database/database'),
+	queries = require('../database/queries.json').IntervalRecord,
+	Interval = require('./interval'),
+	moment = require('moment'),
+	SoundRecord = require('./soundRecord'),
+	async = require('async'),
+	errorCodes = require("../errorCodes.json");
 
 
 var IntervalRecord = function (interval, loudness) {
@@ -18,21 +19,23 @@ var IntervalRecord = function (interval, loudness) {
 };
 
 IntervalRecord.createAtInterval = function (interval, callback) {
-	//TODO: check to see if this is a unique record
 	var dates = interval.getDates();
 	//grab each record in this frame
-	SoundRecord.averageLoudnessBetweenDates(dates.from, dates.to, function (err, average) {
-
-		// TODO: handle error
-		var intervalRecord = new IntervalRecord(interval, average);
-		intervalRecord.save(function (err, record) {
-			if (err) {
-				callback(err);
-			} else {
-				callback(null, record);
-			}
-		})
-
+	SoundRecord.medianLoudnessBetweenDates(dates.from, dates.to, function (err, median) {
+		// handle an error first if it comes up
+		if (err && !median) {
+			callback(err);
+		} else {
+			// save a new interval record
+			var intervalRecord = new IntervalRecord(interval, median);
+			intervalRecord.save(function (err, record) {
+				if (err) {
+					callback(err);
+				} else {
+					callback(null, record);
+				}
+			})
+		}
 	});
 };
 
@@ -49,15 +52,14 @@ IntervalRecord.prototype.save = function (callback) {
 			callback(err);
 		} else {
 			if (oldRecord) {
-				//don't save
-				// the record is already in the database. dont save and dont send back an error\
+				// don't save, send back the old record
+				// the record is already in the database. Don't save and don't send back an error.
 				callback(null, oldRecord);
 			} else {
 				// save it
 				db.query(queries.insert, [intervalRange.from, intervalRange.to, record.loudness], function (err, result) {
 					if (err) {
-						//TODO: find out the error and send back a good one
-						callback(err);
+						callback(errorCodes.save_error);
 					} else {
 						record.id = result.insertId;
 						callback(null, record);
@@ -99,7 +101,7 @@ IntervalRecord.atInterval = function (intervalRange, callback) {
 	var dates = intervalRange.getDates();
 	db.query(queries.at, [dates.from, dates.to], function (err, rows) {
 		if (err) {
-			callback(err);
+			callback(errorCodes.database_error);
 		} else {
 			if (rows.length > 0) {
 				var ir = new IntervalRecord(new Interval.atDate(new Date(rows[0]["from_time"])), rows[0]["loudness"]);
@@ -163,11 +165,11 @@ IntervalRecord.betweenDates = function (start, end, callback) {
 
 				if (currentInterval.isInFuture() || currentInterval.isInProgress()) {
 					// we are in trouble!
-					//TODO: make this a nice response from the error codes
-					callback("The start date is in the future!");
+					callback(errorCodes.future_date);
 				}
 
 				// move the endInterval to a safe position
+				//TODO: consider getting the interval at the current date and getting the previous
 				while (endInterval.isInProgress() || endInterval.isInFuture()) {
 					endInterval = endInterval.previous();
 				}
