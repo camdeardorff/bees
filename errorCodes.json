@@ -1,6 +1,26 @@
 {
-  "badParameters": {
+  "bad_parameters": {
     "message": "The parameters received are not recognized by this api, please check the usage again.",
     "code": "001"
+  },
+  "save_error": {
+    "message": "There was an error saving the data sent, please try again later.",
+    "code": "002"
+  },
+  "database_error": {
+    "message": "There was an error with the database, please try again later.",
+    "code": "003"
+  },
+  "no_records": {
+    "message": "There are no records that apply to this request",
+    "code": "004"
+  },
+  "date_mismatch": {
+    "message": "The end date provided precedes the start date. Switch and try again.",
+    "code": "005"
+  },
+  "future_date": {
+    "message": "The date(s) provided are sometime in the future. Those records have yet to be collected and calculated.",
+    "code": "006"
   }
 }
