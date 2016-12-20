@@ -112,6 +112,7 @@ SoundRecord.medianLoudnessBetweenDates = function (start, end, callback) {
 				// that means we can get the median super easy!
 
 				var middle = (records.length / 2).toFixed(0);
+				console.log("!!! ", records[middle]);
 				var median = records[middle].loudness;
 
 				callback(null, median);
