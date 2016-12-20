@@ -20,10 +20,11 @@ db.query = function (sqlString, values, callback) {
 		if (err) {
 			callback(err);
 		} else {
-			connection.query(sqlString, values, function (err, rows, results) {
+			var q = connection.query(sqlString, values, function (err, rows, results) {
 				callback(err, rows, results);
 				connection.release();
 			});
+			console.log(q.sql);
 		}
 	});
 };
