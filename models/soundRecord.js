@@ -111,14 +111,18 @@ SoundRecord.medianLoudnessBetweenDates = function (start, end, callback) {
 
 				// !IMPORTANT! : the query returns the rows in asc order based on loudness...
 				// that means we can get the median super easy!
+				var median;
+				if (records.length === 1) {
+					console.log("there was one record");
 
+					median = records[0].loudness;
+				} else {
+					var middle = (records.length / 2).toFixed(0);
+					console.log("!!! records: ", records);
+					console.log("middle: ", middle);
 
-				var middle = (records.length / 2).toFixed(0);
-				console.log("!!! records: ", records);
-				console.log("middle: ", middle);
-
-				var median = records[middle].loudness;
-
+					median = records[middle].loudness;
+				}
 				callback(null, median);
 			} else {
 				console.log("no records, cannot find median of empty list.");
