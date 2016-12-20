@@ -3,7 +3,6 @@
  */
 
 var express = require('express'),
-	SoundRecord = require('../models/soundRecord'),
 	IntervalRecord = require('../models/intervalRecord');
 var errorCodes = require('../errorCodes.json');
 var moment = require('moment-timezone');
@@ -13,8 +12,7 @@ var moment = require('moment-timezone');
 exports.today = function (req, res, next) {
 	var message = {};
 
-	var timeZone = req.params["timeZone"];
-	timeZone = timeZone.replace("*=SLASH=*", "/");
+	var timeZone = req.params["timeZone"].replace("*=SLASH=*", "/");
 
 	console.log("received request for today");
 	console.log("timezone: ", timeZone);
@@ -46,7 +44,6 @@ exports.today = function (req, res, next) {
 					from: moment.utc(bounds.from).tz("America/New_York").format("h:mm"),
 					to: moment.utc(bounds.to).tz("America/New_York").format("h:mm")
 				};
-
 				message.records.push(record);
 			}
 		}
@@ -56,40 +53,59 @@ exports.today = function (req, res, next) {
 };
 
 
-/*
- router.get('/from/:fromDate/to/:toDate', function (req, res) {
- // 	var message = {};	var MS_PER_MINUTE = 60000;
+//'/report/range/from/:fromTime/to/:toTime/inZone/:timeZone'
+
+//times will be in a HH:mm format
+
+exports.range = function (req, res, next) {
+	var message = {};
+	var params = req.params;
+
+	if (params) {
+		var from = params["fromTime"];
+		var to = params["toTime"];
+		var timeZone = params["timeZone"].replace("*=SLASH=*", "/");
+
+		console.log("received request for range");
+		console.log("timezone: ", timeZone);
+		console.log("from: ", from, ", to: ", to);
+
+		var start = moment.tz(from, "HH:mm", timeZone);
+		console.log("start: ", start);
+		var end = moment.tz(to, "HH:mm", timeZone);
+		console.log("end: ", end);
+
+		IntervalRecord.betweenDates(start.toDate(), end.toDate(), function (err, records) {
+			if (err) {
+				message.success = false;
+				message.error = err;
+			} else {
+				message.success = true;
+				message.records = [];
+				for (var i = 0; i < records.length; i++) {
+					var record = records[i];
+
+					// simplify everything for the client
+					var bounds = record.interval.boundsValue();
+					delete record.interval;
+					record.range = {
+						from: moment.utc(bounds.from).tz("America/New_York").format("h:mm"),
+						to: moment.utc(bounds.to).tz("America/New_York").format("h:mm")
+					};
+					message.records.push(record);
+				}
+			}
+			res.json(message);
+			next();
+		});
 
 
- var fromDate =
- var offsetString = req.params["utcMinutesOffset"];
- var utcOffset = parseInt(offsetString);
- console.log(utcOffset);
 
- var message = {};
+	} else {
+		message.success = false;
+		message.error = "Bad params";
+		res.json(message);
+		next();
+	}
 
- var today = new Date();
- today.setHours(0, 0, 0, 0);
- console.log("today : ", today);
- var start = new Date(today.valueOf() + utcOffset * MS_PER_MINUTE);
- console.log("start     : ", start);
- var end = new Date(start.valueOf() + 1440 * MS_PER_MINUTE)
- console.log("end   : ", end);
-
-
- IntervalRecord.betweenDates(start, end, function (err, records) {
- if (err) {
- message.success = false;
- message.error = err;
- } else {
- message.success = true;
- message.records = [];
- for (var i = 0; i < records.length; i++) {
- message.records.push(records[i]);
- }
- }
- res.json(message);
- });
- });
-
- */
+};
