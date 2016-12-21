@@ -64,7 +64,7 @@ $( document ).ready(function() {
 			}
 
 			console.log(loudnessSamples);
-			var ctx = document.getElementById("myChart");
+			var ctx = document.getElementById("loudness-chart");
 			var myChart = new Chart(ctx, {
 				type: 'line',
 				data: {
@@ -77,6 +77,8 @@ $( document ).ready(function() {
 						borderWidth: 1
 					}]
 				},
+				responsive: true,
+				maintainAspectRatio: false,
 				options: {
 					scales: {
 						yAxes: [{
