@@ -22,8 +22,7 @@ SoundRecord.prototype.save = function (callback) {
 
 	db.query(queries.insert, [this.sampleDate, this.loudness], function (err, result) {
 		if (err) {
-			//TODO: find out the error and send back a good one
-			callback(err);
+			callback(errorCodes.save_error);
 		} else {
 			record.id = result.insertId;
 			callback(null, record);
@@ -35,11 +34,9 @@ SoundRecord.samplesBeforeDate = function (date, callback) {
 
 	db.query(queries.beforeDate, [date], function (err, rows) {
 		if (err) {
-			//TODO: find out the error and send back a good one
-			callback(err);
+			callback(errorCodes.database_error);
 		} else {
 			var records = [];
-
 			for (var i = 0; i < rows.length; i++) {
 				var row = rows[i];
 				records[i] = new SoundRecord(
@@ -49,7 +46,6 @@ SoundRecord.samplesBeforeDate = function (date, callback) {
 					row["loudness"]
 				);
 			}
-
 			callback(null, records);
 		}
 	});
@@ -60,13 +56,11 @@ SoundRecord.samplesAfterDate = function (date, callback) {
 
 	db.query(queries.afterDate, [date], function (err, rows) {
 		if (err) {
-			//TODO: find out the error and send back a good one
-			callback(err);
+			callback(errorCodes.database_error);
 		} else {
 			var records = [];
 			for (var i = 0; i < rows.length; i++) {
 				var row = rows[i];
-				console.log("working with row: ", row);
 				records[i] = new SoundRecord(
 					row["id"],
 					row["sample_time"],
@@ -74,7 +68,6 @@ SoundRecord.samplesAfterDate = function (date, callback) {
 					row["loudness"]
 				);
 			}
-
 			callback(null, records);
 		}
 	});
@@ -89,7 +82,6 @@ SoundRecord.samplesBetweenDates = function (start, end, callback) {
 			var records = [];
 			for (var i = 0; i < rows.length; i++) {
 				var row = rows[i];
-				console.log(row);
 				records[i] = new SoundRecord(
 					row["id"],
 					row["sample_time"],
@@ -113,9 +105,6 @@ SoundRecord.medianLoudnessBetweenDates = function (start, end, callback) {
 				// that means we can get the median super easy!
 
 				var middle = Math.floor(records.length / 2);
-				console.log("!!! records: ", records);
-				console.log("middle: ", middle);
-
 				var median = records[middle].loudness;
 
 				callback(null, median);
