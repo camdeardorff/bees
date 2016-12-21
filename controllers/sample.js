@@ -5,7 +5,6 @@
 
 var express = require('express'),
 	SoundRecord = require('../models/soundRecord'),
-	IntervalRecord = require('../models/intervalRecord'),
 	errorCodes = require('../errorCodes.json'),
 	async = require('async');
 
