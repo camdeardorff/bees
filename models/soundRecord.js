@@ -31,7 +31,6 @@ SoundRecord.prototype.save = function (callback) {
 };
 
 SoundRecord.samplesBeforeDate = function (date, callback) {
-
 	db.query(queries.beforeDate, [date], function (err, rows) {
 		if (err) {
 			callback(errorCodes.database_error);
@@ -52,8 +51,6 @@ SoundRecord.samplesBeforeDate = function (date, callback) {
 };
 
 SoundRecord.samplesAfterDate = function (date, callback) {
-	console.log("getting samples after: ", date);
-
 	db.query(queries.afterDate, [date], function (err, rows) {
 		if (err) {
 			callback(errorCodes.database_error);
@@ -74,7 +71,6 @@ SoundRecord.samplesAfterDate = function (date, callback) {
 };
 
 SoundRecord.samplesBetweenDates = function (start, end, callback) {
-	console.log("getting samples between ", start, ", and ", end);
 	db.query(queries.betweenDates, [start, end], function (err, rows) {
 		if (err) {
 			callback(errorCodes.database_error);
@@ -106,10 +102,8 @@ SoundRecord.medianLoudnessBetweenDates = function (start, end, callback) {
 
 				var middle = Math.floor(records.length / 2);
 				var median = records[middle].loudness;
-
 				callback(null, median);
 			} else {
-				console.log("no records, cannot find median of empty list.");
 				callback(errorCodes.no_records, -1);
 			}
 		}
