@@ -87,7 +87,7 @@ IntervalRecord.prototype.next = function (callback) {
 
 						//save asynchronously?
 						newRecord.save(function (err, savedRecord) {
-							//
+							// if it doesn't go through nothing was lost. We'll get it next time.
 						});
 					}
 				})
@@ -126,10 +126,9 @@ IntervalRecord.containingDate = function (dateObj, callback) {
 };
 
 IntervalRecord.betweenDates = function (start, end, callback) {
-	console.log("interval records between dates: ", start, " ,", end);
-	var expectedRecords = IntervalRecord.expectedRecordsBetweenDates(start, end);
+	var expectedRecords = IntervalRecord.intervalsOfRecordsBetweenDates(start, end);
 
-	if (expectedRecords === 0) {
+	if (expectedRecords.length === 0) {
 		callback(errorCodes.future_date);
 	} else {
 		console.log("expecting " + expectedRecords + " records");
@@ -222,50 +221,19 @@ IntervalRecord.betweenDates = function (start, end, callback) {
 	}
 };
 
-IntervalRecord.expectedRecordsBetweenDates = function (start, end) {
+IntervalRecord.intervalsOfRecordsBetweenDates = function (start, end) {
 	console.log("expected Records Between Dates: ", start, " ,", end);
 
-	/*
-	 it is easy to get the expected number of records between dates because it should be the number of
-	 total minutes divided by the range time. But what if there is residue? The residue is still in the
-	 range so we should return every single record that has a peice of that range.
-
-	 If the start is in the middle of an interval then we will give them the full interval they began in.
-	 If the end is in the middle of an interval then we will give them the full interval they began in UNLESS the
-	 end date is in the future.
-
-	 Fixed bug!
-	 There is an edge case where the expected records is one more than it should be. If the interval has not yet been
-	 fully completed - still in progress - then don't include that one.
-	 */
-	var now = new Date();
-
-	if (start > now) {
-		return 0;
-	} else {
-		if (end > now) {
-			end = now;
+	var intervals = Interval.allBetweenDates(start, end);
+	var eligibleIntervals = [];
+	for (var i = 0; i < intervals.length; i++) {
+		var interval = intervals[i];
+		if (!interval.isInFuture() && !interval.isInProgress()) {
+			eligibleIntervals.push(interval);
 		}
-
-		var currentInterval = Interval.atDate(start);
-		var endInterval = Interval.atDate(end);
-
-		console.log("start interval: ", currentInterval);
-		console.log("end interval: ", endInterval);
-		if (Interval.atDate(now).isEqualToInterval(endInterval)) {
-			// the interval is still in progress. don't use this one... get the previous
-			endInterval = endInterval.previous();
-		}
-
-		// one because start is an interval and consider that start and end are in the same interval.
-		var count = 1;
-		while (!currentInterval.isEqualToInterval(endInterval)) {
-			count += 1;
-			currentInterval = currentInterval.next();
-		}
-
-		return count;
 	}
+
+	return eligibleIntervals;
 };
 
 
