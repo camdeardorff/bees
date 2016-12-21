@@ -145,4 +145,31 @@ Interval.atDate = function (dateObj) {
 	return new Interval(date, hour, intervalIndex);
 };
 
+Interval.allBetweenDates = function (start, end) {
+	var intervals = [];
+	var now = new Date();
+
+	// if the start is in the past then proceed
+	if (start <= end) {
+
+		var currentInterval = Interval.atDate(start);
+		var endInterval = Interval.atDate(end);
+
+		// they are in the same interval
+		if (currentInterval.isEqualToInterval(endInterval)) {
+			intervals.push(currentInterval);
+		} else {
+			// get all of the intervals in between
+			while (!currentInterval.isEqualToInterval(endInterval)) {
+				intervals.push(currentInterval);
+				currentInterval = currentInterval.next();
+			}
+			// push the end interval as well. It is included.
+			intervals.push(endInterval);
+		}
+	}
+	return intervals;
+};
+
+
 module.exports = Interval;
