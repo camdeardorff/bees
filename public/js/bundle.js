@@ -17076,7 +17076,7 @@ function getDataAtTimeZone(tz, callback) {
 	showLoadingGif();
 	$.ajax({
 		method: "GET",
-		url: DEVEOLPMENT_SERVER_LOCATION + "/report/today/" + tz,
+		url: SERVER_LOCATION + "/report/today/" + tz,
 		contentType: 'application/json',
 		dataType: 'json',
 		error: function (request, status, error) {
