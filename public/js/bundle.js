@@ -17125,7 +17125,7 @@ $( document ).ready(function() {
 				data: {
 					labels: times,
 					datasets: [{
-						label: 'MVNU Caf Noise Volume',
+						label: 'MVNU Cafeteria Loudness Today',
 						data: loudnessSamples,
 						backgroundColor: 'rgba(0, 188, 255, 0.6)',
 						borderColor: 'rgba(51, 51, 51, 1)',
