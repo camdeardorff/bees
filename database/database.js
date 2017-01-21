@@ -24,7 +24,6 @@ db.query = function (sqlString, values, callback) {
 				callback(err, rows, results);
 				connection.release();
 			});
-			console.log(q.sql);
 		}
 	});
 };
