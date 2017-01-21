@@ -22,5 +22,9 @@
   "future_date": {
     "message": "The date(s) provided are sometime in the future. Those records have yet to be collected and calculated.",
     "code": "006"
+  },
+  "invalid_timezone": {
+    "message": "The timezone supplied is not a recognized time zone id",
+    "code": "007"
   }
 }
