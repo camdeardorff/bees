@@ -131,14 +131,16 @@ IntervalRecord.betweenDates = function (start, end, callback) {
 	if (expectedRecords.length === 0) {
 		callback(errorCodes.future_date);
 	} else {
-		console.log("expecting " + expectedRecords + " records");
+		// console.log("expecting " + expectedRecords + " records");
 		db.query(queries.inRange, [start, end], function (err, rows) {
 			if (err) {
-				console.log("error getting the interval records in range: ", err);
+				// console.log("error getting the interval records in range: ", err);
 				callback(err);
 			} else {
-				console.log("found " + rows.length + " records");
-				if (rows.length >= expectedRecords) {
+				if (rows.length === 0) {
+					callback(errorCodes.future_date);
+				}
+				else if (rows.length >= expectedRecords) {
 					// all of the records were in the database, send them all back
 					var savedRecords = [];
 					for (var i = 0; i < rows.length; i++) {
@@ -222,7 +224,7 @@ IntervalRecord.betweenDates = function (start, end, callback) {
 };
 
 IntervalRecord.intervalsOfRecordsBetweenDates = function (start, end) {
-	console.log("expected Records Between Dates: ", start, " ,", end);
+	// console.log("expected Records Between Dates: ", start, " ,", end);
 
 	var intervals = Interval.allBetweenDates(start, end);
 	var eligibleIntervals = [];
