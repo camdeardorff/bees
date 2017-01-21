@@ -94,6 +94,8 @@ $( document ).ready(function() {
 					}
 				}
 			});
+		} else {
+			alert("There is currently no data to show. Try again at a later time.")
 		}
 	});
 });
