@@ -23,7 +23,7 @@ exports.new = function (req, res, next) {
 					message.success = false;
 					message.error = err;
 				} else {
-					console.log("successfully saved: ", savedSoundResult);
+					// console.log("successfully saved: ", savedSoundResult);
 					message.success = true;
 
 				}
@@ -48,10 +48,8 @@ exports.bulk = function (req, res, next) {
 	var message = {};
 	if (data) {
 		var samples = data.samples;
-		console.log("samples: ", samples);
 		if (samples) {
 			async.eachLimit(samples, 5, function (sample, callback) {
-				console.log("saving sample");
 				var loudness = sample.loudness;
 				var time = new Date(parseInt(sample.atTime));
 				if (loudness != null && time != null) {
@@ -61,7 +59,7 @@ exports.bulk = function (req, res, next) {
 						console.log("saved");
 					});
 				} else {
-					callback("sample missing required items");
+					callback(errorCodes.bad_parameters);
 				}
 			}, function (err) {
 				if (err) {

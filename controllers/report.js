@@ -14,8 +14,7 @@ exports.today = function (req, res, next) {
 
 	var timeZone = req.params["timeZone"].replace("*=SLASH=*", "/");
 
-	console.log("received request for today");
-	console.log("timezone: ", timeZone);
+	// console.log("timezone: ", timeZone);
 
 	var start = moment.tz(timeZone)
 		.hours(6)
@@ -26,6 +25,8 @@ exports.today = function (req, res, next) {
 		.hours(21)
 		.minutes(59)
 		.seconds(59);
+
+
 
 	IntervalRecord.betweenDates(start.toDate(), end.toDate(), function (err, records) {
 		if (err) {
@@ -41,8 +42,8 @@ exports.today = function (req, res, next) {
 				var bounds = record.interval.boundsValue();
 				delete record.interval;
 				record.range = {
-					from: moment.utc(bounds.from).tz("America/New_York").format("h:mm"),
-					to: moment.utc(bounds.to).tz("America/New_York").format("h:mm")
+					from: moment.utc(bounds.from).tz(timeZone).format("h:mm"),
+					to: moment.utc(bounds.to).tz(timeZone).format("h:mm")
 				};
 				message.records.push(record);
 			}
@@ -95,8 +96,8 @@ exports.range = function (req, res, next) {
 						var bounds = record.interval.boundsValue();
 						delete record.interval;
 						record.range = {
-							from: moment.utc(bounds.from).tz("America/New_York").format("h:mm"),
-							to: moment.utc(bounds.to).tz("America/New_York").format("h:mm")
+							from: moment.utc(bounds.from).tz(timeZone).format("h:mm"),
+							to: moment.utc(bounds.to).tz(timeZone).format("h:mm")
 						};
 						message.records.push(record);
 					}
