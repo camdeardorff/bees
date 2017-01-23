@@ -137,10 +137,7 @@ IntervalRecord.betweenDates = function (start, end, callback) {
 				// console.log("error getting the interval records in range: ", err);
 				callback(err);
 			} else {
-				if (rows.length === 0) {
-					callback(errorCodes.future_date);
-				}
-				else if (rows.length >= expectedRecords) {
+				if (rows.length >= expectedRecords) {
 					// all of the records were in the database, send them all back
 					var savedRecords = [];
 					for (var i = 0; i < rows.length; i++) {
